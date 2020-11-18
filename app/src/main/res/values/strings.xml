@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">gifapp</string>
+    <string name="internet_connection_warning">Please check your internet connection.</string>
 </resources>

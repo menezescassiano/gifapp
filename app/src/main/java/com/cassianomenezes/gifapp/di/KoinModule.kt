@@ -19,7 +19,7 @@ private val repositoryModule = module {
 }*/
 
 private val viewModelModule = module {
-    viewModel { MainViewModel(/*repository = get()*/) }
+    viewModel { MainViewModel(repository = get()) }
     //viewModel { RecipeDetailViewModel(resourceManager = get()) }
 }
 
