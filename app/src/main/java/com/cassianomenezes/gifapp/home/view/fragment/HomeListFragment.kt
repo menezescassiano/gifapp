@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cassianomenezes.gifapp.BR
 import com.cassianomenezes.gifapp.R
-import com.cassianomenezes.gifapp.extension.hasInternetConnection
+import com.cassianomenezes.gifapp.extension.bindingContentView
 import com.cassianomenezes.gifapp.extension.observe
 import com.cassianomenezes.gifapp.extension.showToast
 import com.cassianomenezes.gifapp.home.model.Gif
@@ -24,7 +25,6 @@ class HomeListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.apply {
-            getData()
             observe(responseData) {
                 setRecyclerView()
             }
@@ -32,7 +32,11 @@ class HomeListFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_home_list, container, false)
+
+        return bindingContentView(inflater, R.layout.fragment_home_list, container).apply {
+            setVariable(BR.onSearchClick, View.OnClickListener { viewModel.getData() })
+        }.root
+
     }
 
     private fun setRecyclerView() {

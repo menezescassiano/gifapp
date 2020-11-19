@@ -11,7 +11,11 @@
 
         <variable
             name="viewModel"
-            type="com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel" />
+            type="com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel" />
+
+        <variable
+            name="onSearchClick"
+            type="android.view.View.OnClickListener" />
 
         <variable
             name="onTryAgainClick"
@@ -23,16 +27,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <EditText
+            android:id="@+id/edit_query"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:hint="What do you want to search?"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:onClick="@{onSearchClick}"
+            android:backgroundTint="@color/black"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_query" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingBottom="?attr/actionBarSize"
+            app:layout_constraintTop_toBottomOf="@+id/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemCount="4"
-            tools:listitem="@layout/layout_gif_list_item"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:listitem="@layout/layout_gif_list_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
