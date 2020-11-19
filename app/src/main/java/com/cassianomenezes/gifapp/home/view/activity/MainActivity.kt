@@ -15,23 +15,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
 
     private val viewModel: MainViewModel by viewModel()
-    lateinit var adapter: PagerAdapter
+    lateinit var mAdapter: PagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBinding()
 
-        val myTab1 = tabLayout.newTab()
-        myTab1.text = "Tab 1"
-        val myTab2 = tabLayout.newTab()
-        myTab2.text = "Tab 2"
-        tabLayout.addTab(myTab1)
-        tabLayout.addTab(myTab2)
-        tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        adapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount)
-        viewPager.adapter = adapter
-        viewPager.addOnPageChangeListener(TabLayoutOnPageChangeListener(tabLayout))
-        tabLayout.addOnTabSelectedListener(this)
+        setupTabLayout()
     }
 
     private fun setupBinding() {
@@ -39,6 +29,28 @@ class MainActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
             setVariable(BR.viewModel, viewModel)
             //setVariable(BR.onTryAgainClick, View.OnClickListener { onTryAgainClick() })
         }
+    }
+
+    private fun setupTabLayout() {
+        val gifListTab = tabLayout.newTab()
+        gifListTab.text = getString(R.string.gif_list_tab_title)
+        val favListTab = tabLayout.newTab()
+        favListTab.text = getString(R.string.fav_gif_list_tab_title)
+
+        tabLayout.run {
+            addTab(gifListTab)
+            addTab(favListTab)
+            tabGravity = TabLayout.GRAVITY_FILL
+            addOnTabSelectedListener(this@MainActivity)
+        }
+
+        mAdapter = PagerAdapter(supportFragmentManager, tabLayout.tabCount)
+
+        viewPager.run {
+            adapter = mAdapter
+            addOnPageChangeListener(TabLayoutOnPageChangeListener(tabLayout))
+        }
+
     }
 
     override fun onTabSelected(tab: TabLayout.Tab?) {
