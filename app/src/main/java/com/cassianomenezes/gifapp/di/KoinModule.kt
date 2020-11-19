@@ -1,5 +1,6 @@
 package com.cassianomenezes.gifapp.di
 
+import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel
 import com.cassianomenezes.gifapp.network.RetrofitClient
 import com.cassianomenezes.gifapp.repository.DataRepository
@@ -20,6 +21,7 @@ private val repositoryModule = module {
 
 private val viewModelModule = module {
     viewModel { MainViewModel(repository = get()) }
+    viewModel { HomeListViewModel(repository = get()) }
     //viewModel { RecipeDetailViewModel(resourceManager = get()) }
 }
 

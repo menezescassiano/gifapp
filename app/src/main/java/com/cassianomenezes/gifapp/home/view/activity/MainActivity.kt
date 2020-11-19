@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cassianomenezes.gifapp.BR
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.extension.bindingContentView
-import com.cassianomenezes.gifapp.extension.hasInternetConnection
-import com.cassianomenezes.gifapp.extension.showToast
 import com.cassianomenezes.gifapp.home.view.adapter.PagerAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel
 import com.google.android.material.tabs.TabLayout
@@ -17,13 +15,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
 
     private val viewModel: MainViewModel by viewModel()
-    lateinit var _tabLayout: TabLayout
     lateinit var adapter: PagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBinding()
-        getData()
 
         val myTab1 = tabLayout.newTab()
         myTab1.text = "Tab 1"
@@ -42,18 +38,6 @@ class MainActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
         bindingContentView(R.layout.activity_main).apply {
             setVariable(BR.viewModel, viewModel)
             //setVariable(BR.onTryAgainClick, View.OnClickListener { onTryAgainClick() })
-        }
-    }
-
-    private fun getData() {
-        viewModel.run {
-            when {
-                hasInternetConnection() -> getData()
-                else -> {
-                    showToast(getString(R.string.internet_connection_warning))
-                    //showTryAgain.set(true)
-                }
-            }
         }
     }
 
