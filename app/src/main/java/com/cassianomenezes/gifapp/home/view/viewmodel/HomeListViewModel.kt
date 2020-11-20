@@ -24,14 +24,22 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
     lateinit var list: GifData
     var inputTextSearch = ObservableField("")
     var running = ObservableBoolean(false)
+    var showTryAgain = ObservableBoolean(false)
 
     init {
         getTrendingData()
     }
 
+    fun handleData() {
+        when {
+            inputTextSearch.get().isNullOrEmpty() -> getTrendingData()
+            else -> getData()
+        }
+    }
+
     private fun getTrendingData() {
         running.set(true)
-        //showTryAgain.set(false)
+        showTryAgain.set(false)
         viewModelScope.launch {
             try {
                 repository.getTrending(getTrendingParams()).run {
@@ -39,18 +47,18 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
                     takeIf { this.isSuccessful }?.run {
                         responseData.postValue(true)
                         list = this.body() as GifData
-                    } /*?: showTryAgain.set(true)*/
+                    } ?: showTryAgain.set(true)
                 }
             } catch (e: Exception) {
                 running.set(false)
-                print("deu ruim")
+                showTryAgain.set(true)
             }
         }
     }
 
-    fun getData() {
+    private fun getData() {
         running.set(true)
-        //showTryAgain.set(false)
+        showTryAgain.set(false)
         viewModelScope.launch {
             try {
                 repository.getData(getParams()).run {
@@ -58,11 +66,11 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
                     takeIf { this.isSuccessful }?.run {
                         responseData.postValue(true)
                         list = this.body() as GifData
-                    } /*?: showTryAgain.set(true)*/
+                    } ?: showTryAgain.set(true)
                 }
             } catch (e: Exception) {
                 running.set(false)
-                print("deu ruim")
+                showTryAgain.set(true)
             }
         }
     }

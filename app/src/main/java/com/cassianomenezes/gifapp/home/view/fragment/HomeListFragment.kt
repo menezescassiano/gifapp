@@ -38,7 +38,10 @@ class HomeListFragment : Fragment() {
             setVariable(BR.viewModel, viewModel)
             setVariable(BR.onSearchClick, View.OnClickListener {
                 context?.dismissKeyboard(edit_query)
-                viewModel.getData()
+                viewModel.handleData()
+            })
+            setVariable(BR.onTryAgainClick, View.OnClickListener {
+                viewModel.handleData()
             })
         }.root
 
