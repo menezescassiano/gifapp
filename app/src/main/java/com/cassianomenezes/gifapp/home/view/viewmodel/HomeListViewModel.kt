@@ -5,13 +5,21 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cassiano.myapplication.utils.ResourceManager
 import com.cassianomenezes.gifapp.BuildConfig
+import com.cassianomenezes.gifapp.extension.clearPrefs
+import com.cassianomenezes.gifapp.extension.savePrefs
 import com.cassianomenezes.gifapp.home.model.GifData
 import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
+import kotlin.collections.HashMap
+import kotlin.collections.MutableMap
+import kotlin.collections.set
 
 
-class HomeListViewModel(val repository: DataRepository) : ViewModel() {
+class HomeListViewModel(val repository: DataRepository, resourceManager: ResourceManager) : ViewModel() {
+
+    private val sharedPreferences by lazy { resourceManager.getShardPreferences() }
 
     companion object {
         const val LIMIT = "20"
@@ -93,5 +101,15 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
         data["rating"] = LANG
 
         return data
+    }
+
+    fun saveGif(id: String, url: String) {
+        sharedPreferences?.let {
+            if (it.contains(id)) {
+                it.clearPrefs(id)
+            } else {
+                it.savePrefs(id, url)
+            }
+        }
     }
 }

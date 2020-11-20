@@ -57,12 +57,13 @@ class HomeListFragment : Fragment() {
 
         listAdapter.apply {
             observe(selectedGif) {
-                context?.showToast("aeaeae")
-            }
-            observe(saveGif) {
                 it?.title?.let { title -> context?.showToast(title) }
             }
+            observe(saveGif) {
+                it?.let {
+                    viewModel.saveGif(it.id, it.images.originalDetail.url)
+                }
+            }
         }
-
     }
 }

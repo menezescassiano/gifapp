@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.databinding.LayoutGifListItemBinding
 import com.cassianomenezes.gifapp.home.model.Gif
+import kotlinx.android.synthetic.main.layout_gif_list_item.view.*
 
 class GifListAdapter(private val list: ArrayList<Gif>) : RecyclerView.Adapter<GifViewHolder>() {
 
@@ -28,13 +29,12 @@ class GifListAdapter(private val list: ArrayList<Gif>) : RecyclerView.Adapter<Gi
         holder.apply {
             bind(item)
 
-            itemView.setOnClickListener {
-                selectedGif.value = item
-            }
-
-            itemView.setOnLongClickListener {
-                saveGif.value = item
-                true
+            itemView.run {
+                setOnClickListener { selectedGif.value = item }
+                favIcon.setOnClickListener {
+                    saveGif.value = item
+                    setIcon(item)
+                }
             }
         }
     }

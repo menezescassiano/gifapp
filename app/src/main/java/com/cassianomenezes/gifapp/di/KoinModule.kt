@@ -1,5 +1,6 @@
 package com.cassianomenezes.gifapp.di
 
+import com.cassiano.myapplication.utils.ResourceManager
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel
 import com.cassianomenezes.gifapp.network.RetrofitClient
@@ -15,16 +16,16 @@ private val repositoryModule = module {
     single { DataRepository(service = get()) }
 }
 
-/*private val resourceManager = module {
+private val resourceManager = module {
     single { ResourceManager(context = get()) }
-}*/
+}
 
 private val viewModelModule = module {
     viewModel { MainViewModel(repository = get()) }
-    viewModel { HomeListViewModel(repository = get()) }
+    viewModel { HomeListViewModel(repository = get(), resourceManager = get()) }
     //viewModel { RecipeDetailViewModel(resourceManager = get()) }
 }
 
 fun loadKoinModules() {
-    org.koin.core.context.loadKoinModules(listOf(serviceModule, repositoryModule, /*resourceManager,*/ viewModelModule))
+    org.koin.core.context.loadKoinModules(listOf(serviceModule, repositoryModule, resourceManager, viewModelModule))
 }

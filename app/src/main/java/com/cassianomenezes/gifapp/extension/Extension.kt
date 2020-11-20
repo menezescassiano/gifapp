@@ -50,3 +50,39 @@ fun Context.dismissKeyboard(editText: EditText) {
     val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(editText.windowToken, 0)
 }
+
+fun SharedPreferences.get(key: String, default: String? = null): String {
+    val value by lazy { getString(key, default).orEmpty() }
+
+    return takeIf { contains(key) }
+        ?.run { key }
+        ?: value
+}
+
+fun SharedPreferences.savePrefs(id: String, save: Boolean) {
+    with(edit()) {
+        putBoolean(id, save)
+        commit()
+    }
+}
+
+fun SharedPreferences.savePrefs(id: String, string: String) {
+    with(edit()) {
+        putString(id, string)
+        commit()
+    }
+}
+
+fun SharedPreferences.savePrefs(id: String, count: Int) {
+    with(edit()) {
+        putInt(id, count)
+        commit()
+    }
+}
+
+fun SharedPreferences.clearPrefs(id: String) {
+    with(edit()) {
+        remove(id)
+        commit()
+    }
+}

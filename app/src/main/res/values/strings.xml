@@ -7,4 +7,5 @@
     <string name="search_gif_hint">What do you want to search?</string>
     <string name="search_button_text">Search</string>
     <string name="try_again">Something went wrong. Click to try again.</string>
+    <string name="app_shared_preferences">MyPrefs</string>
 </resources>
