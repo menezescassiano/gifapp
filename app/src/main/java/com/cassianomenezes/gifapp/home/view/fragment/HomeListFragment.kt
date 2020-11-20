@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.cassianomenezes.gifapp.BR
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.extension.bindingContentView
+import com.cassianomenezes.gifapp.extension.dismissKeyboard
 import com.cassianomenezes.gifapp.extension.observe
 import com.cassianomenezes.gifapp.extension.showToast
 import com.cassianomenezes.gifapp.home.model.Gif
@@ -34,7 +35,11 @@ class HomeListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         return bindingContentView(inflater, R.layout.fragment_home_list, container).apply {
-            setVariable(BR.onSearchClick, View.OnClickListener { viewModel.getData() })
+            setVariable(BR.viewModel, viewModel)
+            setVariable(BR.onSearchClick, View.OnClickListener {
+                context?.dismissKeyboard(edit_query)
+                viewModel.getData()
+            })
         }.root
 
     }
@@ -44,16 +49,17 @@ class HomeListFragment : Fragment() {
         recyclerView.apply {
             adapter = listAdapter
             layoutManager = LinearLayoutManager(context)
+            //layoutManager = GridLayoutManager(this, 2)
         }
 
-        listAdapter.selectedRecipe.observe(this@HomeListFragment, {
-            context?.let {
-                it.showToast("aeaeae")
+        listAdapter.apply {
+            observe(selectedGif) {
+                context?.showToast("aeaeae")
             }
-            /*Intent(this, RecipeDetailActivity::class.java).apply {
-                this.putExtra(BUNDLE_RECIPE, it)
-                startActivity(this)
-            }*/
-        })
+            observe(saveGif) {
+                it?.title?.let { title -> context?.showToast(title) }
+            }
+        }
+
     }
 }

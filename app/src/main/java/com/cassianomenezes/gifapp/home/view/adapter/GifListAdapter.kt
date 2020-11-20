@@ -12,7 +12,8 @@ import com.cassianomenezes.gifapp.home.model.Gif
 
 class GifListAdapter(private val list: ArrayList<Gif>) : RecyclerView.Adapter<GifViewHolder>() {
 
-    val selectedRecipe: MutableLiveData<Gif> = MutableLiveData()
+    val selectedGif: MutableLiveData<Gif> = MutableLiveData()
+    val saveGif: MutableLiveData<Gif> = MutableLiveData()
     lateinit var binding: LayoutGifListItemBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
@@ -26,8 +27,14 @@ class GifListAdapter(private val list: ArrayList<Gif>) : RecyclerView.Adapter<Gi
 
         holder.apply {
             bind(item)
+
             itemView.setOnClickListener {
-                selectedRecipe.value = item
+                selectedGif.value = item
+            }
+
+            itemView.setOnLongClickListener {
+                saveGif.value = item
+                true
             }
         }
     }

@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
     private fun setupBinding() {
         bindingContentView(R.layout.activity_main).apply {
             setVariable(BR.viewModel, viewModel)
-            //setVariable(BR.onTryAgainClick, View.OnClickListener { onTryAgainClick() })
         }
     }
 

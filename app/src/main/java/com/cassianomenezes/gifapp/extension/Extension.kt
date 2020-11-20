@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -42,4 +44,9 @@ fun Context.hasInternetConnection(): Boolean {
 
 fun Context.showToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Context.dismissKeyboard(editText: EditText) {
+    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(editText.windowToken, 0)
 }
