@@ -26,11 +26,12 @@ class FavListFragment(): Fragment() {
     private val gifRepositoryImpl by lazy { (activity as MainActivity).gifRepositoryImpl }
     private lateinit var listAdapter: GifListAdapter
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return bindingContentView(inflater, R.layout.fragment_favorite_list, container).apply {
             setVariable(BR.viewModel, viewModel)
             setVariable(BR.onTryAgainClick, View.OnClickListener {
-                //viewModel.handleData()
+                viewModel.getAllElements(gifRepositoryImpl)
             })
         }.root
     }
@@ -38,7 +39,7 @@ class FavListFragment(): Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.apply {
-            observe(responseData) {
+            observe(listData) {
                 it?.let {
                     setRecyclerView(it)
                 }

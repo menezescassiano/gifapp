@@ -41,6 +41,7 @@ class HomeListFragment : Fragment() {
                     setRecyclerView(it)
                 }
             }
+            lifecycle.addObserver(this)
         }
     }
 
@@ -50,9 +51,6 @@ class HomeListFragment : Fragment() {
             setVariable(BR.viewModel, viewModel)
             setVariable(BR.onSearchClick, View.OnClickListener {
                 context?.dismissKeyboard(edit_query)
-                viewModel.handleData()
-            })
-            setVariable(BR.onTryAgainClick, View.OnClickListener {
                 viewModel.handleData()
             })
         }.root

@@ -1,10 +1,7 @@
 package com.cassianomenezes.gifapp.home.view.viewmodel
 
-import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.cassianomenezes.gifapp.BuildConfig
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
@@ -15,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlin.collections.set
 
 
-class HomeListViewModel(val repository: DataRepository) : ViewModel() {
+class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), LifecycleObserver {
 
     companion object {
         const val LIMIT = "20"
@@ -24,17 +21,10 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
         const val LANG = "en"
     }
 
-    val listData = MutableLiveData<ArrayList<GifObject>>()
 
     val responseData: MutableLiveData<Boolean> = MutableLiveData()
     lateinit var list: GifData
     var inputTextSearch = ObservableField("")
-    var running = ObservableBoolean(false)
-    var showTryAgain = ObservableBoolean(false)
-
-    init {
-        getTrendingData()
-    }
 
     fun handleData() {
         when {
@@ -43,41 +33,37 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
         }
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun getTrendingData() {
-        handleUILoading(true, false)
+        handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
             try {
                 repository.getTrending(getTrendingParams()).run {
                     takeIf { this.isSuccessful }?.run {
                         responseData.postValue(true)
                         list = this.body() as GifData
-                    } ?: handleUILoading(false, true)
+                    } ?: handleUILoading(_running = false, _showTryAgain = true)
                 }
             } catch (e: Exception) {
-                handleUILoading(false, true)
+                handleUILoading(_running = false, _showTryAgain = true)
             }
         }
     }
 
     private fun getData() {
-        handleUILoading(true, false)
+        handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
             try {
                 repository.getData(getParams()).run {
                     takeIf { this.isSuccessful }?.run {
                         responseData.postValue(true)
                         list = this.body() as GifData
-                    } ?: handleUILoading(false, true)
+                    } ?: handleUILoading(_running = false, _showTryAgain = true)
                 }
             } catch (e: Exception) {
-                handleUILoading(false, true)
+                handleUILoading(_running = false, _showTryAgain = true)
             }
         }
-    }
-
-    private fun handleUILoading(_running: Boolean, _showTryAgain: Boolean) {
-        running.set(_running)
-        showTryAgain.set(_showTryAgain)
     }
 
     private fun getParams(): MutableMap<String, String> {
@@ -128,19 +114,22 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 for (gifObject in gifObjects) {
-                    when {
-                        gifRepositoryImpl.getById(gifObject.id) != null ->
-                            newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, true))
+                    gifObject.run {
+                        when {
+                            gifRepositoryImpl.getById(gifObject.id) != null ->
+                                newGifObjects.add(GifObject(id, title, images.originalDetail.url, true))
 
-                        else ->
-                            newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, false))
+                            else ->
+                                newGifObjects.add(GifObject(id, title, images.originalDetail.url, false))
 
+                        }
                     }
+
                 }
                 listData.value = newGifObjects
                 running.set(false)
             } catch (e: Exception){
-                print("awaeaeaeae$e")
+                print("Error: $e")
                 running.set(false)
             }
         }

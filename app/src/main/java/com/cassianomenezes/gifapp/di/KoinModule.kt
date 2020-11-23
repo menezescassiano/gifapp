@@ -1,6 +1,7 @@
 package com.cassianomenezes.gifapp.di
 
 import com.cassiano.myapplication.utils.ResourceManager
+import com.cassianomenezes.gifapp.home.view.viewmodel.BaseViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.FavListViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
 import com.cassianomenezes.gifapp.network.RetrofitClient
@@ -21,6 +22,7 @@ private val resourceManager = module {
 }
 
 private val viewModelModule = module {
+    viewModel { BaseViewModel() }
     viewModel { HomeListViewModel(repository = get()) }
     viewModel { FavListViewModel(repository = get()) }
 }
