@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.cassianomenezes.gifapp.BuildConfig
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
 import com.cassianomenezes.gifapp.home.model.GifData
@@ -34,15 +33,18 @@ class FavListViewModel(val repository: DataRepository) : BaseViewModel() {
             handleUILoading(_running = true, _showTryAgain = false)
             viewModelScope.launch {
                 try {
-                    repository.getGifsByIds(getGifsIdsParams(list)).run {
-                        running.set(false)
-                        takeIf { this.isSuccessful }?.run {
-                            for (item in (this.body() as GifData).data) {
-                                gifList.add(GifObject(item.id, item.title, item.images.originalDetail.url, true))
-                            }
-                            listData.value = gifList
-                        } ?: showTryAgain.set(true)
+                    repository.run {
+                        getGifsByIds(getGifsIdsParams(list)).run {
+                            running.set(false)
+                            takeIf { this.isSuccessful }?.run {
+                                for (item in (this.body() as GifData).data) {
+                                    gifList.add(GifObject(item.id, item.title, item.images.originalDetail.url, true))
+                                }
+                                listData.value = gifList
+                            } ?: showTryAgain.set(true)
+                        }
                     }
+
                 } catch (e: Exception) {
                     handleUILoading(_running = false, _showTryAgain = true)
                 }
@@ -50,16 +52,6 @@ class FavListViewModel(val repository: DataRepository) : BaseViewModel() {
         } else {
             listData.value = gifList
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getGifsIdsParams(list: List<GifObject>): MutableMap<String, String> {
-        val data: MutableMap<String, String> = HashMap()
-        val idsList = list.map { it.id }
-        data["ids"] = idsList.toString().removePrefix("[").removeSuffix("]").replace(" ", "")
-        data["api_key"] = BuildConfig.API_KEY
-
-        return data
     }
 
     fun deleteGif(gifObject: GifObject, gifRepositoryImpl: GifRepository) {

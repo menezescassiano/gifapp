@@ -1,34 +1,23 @@
 package com.cassianomenezes.gifapp.home.view.viewmodel
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.*
-import com.cassianomenezes.gifapp.BuildConfig
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
 import com.cassianomenezes.gifapp.home.model.Gif
 import com.cassianomenezes.gifapp.home.model.GifData
 import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
-import kotlin.collections.set
 
 
 class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), LifecycleObserver {
 
-    companion object {
-        const val LIMIT = "20"
-        const val OFFSET = "0"
-        const val RATING = "g"
-        const val LANG = "en"
-    }
-
-
     val responseData: MutableLiveData<Boolean> = MutableLiveData()
     lateinit var list: GifData
-    var inputTextSearch = ObservableField("")
+    var inputTextSearch = MutableLiveData("")
 
     fun handleData() {
         when {
-            inputTextSearch.get().isNullOrEmpty() -> getTrendingData()
+            inputTextSearch.value.isNullOrEmpty() -> getTrendingData()
             else -> getData()
         }
     }
@@ -38,12 +27,15 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
         handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
             try {
-                repository.getTrending(getTrendingParams()).run {
-                    takeIf { this.isSuccessful }?.run {
-                        responseData.postValue(true)
-                        list = this.body() as GifData
-                    } ?: handleUILoading(_running = false, _showTryAgain = true)
+                repository.run {
+                    getTrending(getTrendingParams()).run {
+                        takeIf { this.isSuccessful }?.run {
+                            responseData.postValue(true)
+                            list = this.body() as GifData
+                        } ?: handleUILoading(_running = false, _showTryAgain = true)
+                    }
                 }
+
             } catch (e: Exception) {
                 handleUILoading(_running = false, _showTryAgain = true)
             }
@@ -54,38 +46,21 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
         handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
             try {
-                repository.getData(getParams()).run {
-                    takeIf { this.isSuccessful }?.run {
-                        responseData.postValue(true)
-                        list = this.body() as GifData
-                    } ?: handleUILoading(_running = false, _showTryAgain = true)
+                repository.run {
+                    getData(getParams(inputTextSearch.value.toString())).run {
+                        takeIf { this.isSuccessful }?.run {
+                            responseData.postValue(true)
+                            list = this.body() as GifData
+                        } ?: handleUILoading(_running = false, _showTryAgain = true)
+                    }
                 }
+
             } catch (e: Exception) {
                 handleUILoading(_running = false, _showTryAgain = true)
             }
         }
     }
 
-    private fun getParams(): MutableMap<String, String> {
-        val data: MutableMap<String, String> = HashMap()
-        data["api_key"] = BuildConfig.API_KEY
-        inputTextSearch.get()?.let { data["q"] = it }
-        data["limit"] = LIMIT
-        data["offset"] = OFFSET
-        data["rating"] = RATING
-        data["lang"] = LANG
-
-        return data
-    }
-
-    private fun getTrendingParams(): MutableMap<String, String> {
-        val data: MutableMap<String, String> = HashMap()
-        data["api_key"] = BuildConfig.API_KEY
-        data["limit"] = LIMIT
-        data["rating"] = LANG
-
-        return data
-    }
 
     fun saveGif(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
         viewModelScope.launch {
@@ -124,7 +99,6 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
 
                         }
                     }
-
                 }
                 listData.value = newGifObjects
                 running.set(false)
