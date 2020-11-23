@@ -72,7 +72,7 @@ class HomeListFragment : Fragment() {
                 }
                 observe(saveGif) { obj ->
                     obj?.let {
-                        viewModel.saveGif(GifObject(obj.id, obj.title, obj.url, obj.added), gifRepositoryImpl)
+                        viewModel.gifCrud(GifObject(obj.id, obj.title, obj.url, obj.added), gifRepositoryImpl)
                     }
                 }
             }

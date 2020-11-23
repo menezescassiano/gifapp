@@ -6,17 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cassiano.myapplication.utils.DrawableUtils
 import com.cassianomenezes.gifapp.BR
 import com.cassianomenezes.gifapp.R
-import com.cassianomenezes.gifapp.extension.getSharedPreferences
 import com.cassianomenezes.gifapp.home.database.GifObject
-import com.cassianomenezes.gifapp.home.model.Gif
 
 class GifViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
 
     val context: Context = binding.root.context
-
-    private val sharedPreferences by lazy {
-        context.getSharedPreferences(context.getString(R.string.app_shared_preferences))
-    }
 
     fun bind(item: GifObject) {
 
@@ -38,7 +32,6 @@ class GifViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHol
                     else -> setVariable(BR.favIcon, DrawableUtils.getDrawable(context, R.drawable.ic_unfav))
                 }
             }
-
         }
     }
 }

@@ -62,7 +62,7 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
     }
 
 
-    fun saveGif(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
+    fun gifCrud(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
         viewModelScope.launch {
             try {
                 gifObject.run {
@@ -88,16 +88,14 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
         val newGifObjects = ArrayList<GifObject>()
         viewModelScope.launch {
             try {
-                for (gifObject in gifObjects) {
-                    gifObject.run {
-                        when {
-                            gifRepositoryImpl.getById(gifObject.id) != null ->
-                                newGifObjects.add(GifObject(id, title, images.originalDetail.url, true))
+                gifObjects.forEach {
+                    when {
+                        gifRepositoryImpl.getById(it.id) != null ->
+                            newGifObjects.add(GifObject(it.id, it.title, it.images.originalDetail.url, true))
 
-                            else ->
-                                newGifObjects.add(GifObject(id, title, images.originalDetail.url, false))
+                        else ->
+                            newGifObjects.add(GifObject(it.id, it.title, it.images.originalDetail.url, false))
 
-                        }
                     }
                 }
                 listData.value = newGifObjects

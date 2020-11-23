@@ -12,7 +12,7 @@ import com.cassianomenezes.gifapp.databinding.LayoutGifListItemBinding
 import com.cassianomenezes.gifapp.home.database.GifObject
 import kotlinx.android.synthetic.main.layout_gif_list_item.view.*
 
-class GifListAdapter(private val list: ArrayList<GifObject>, val isGridLayout: Boolean = false) : RecyclerView.Adapter<GifViewHolder>() {
+class GifListAdapter(private val list: ArrayList<GifObject>, private val isGridLayout: Boolean = false) : RecyclerView.Adapter<GifViewHolder>() {
 
     val selectedGif: MutableLiveData<GifObject> = MutableLiveData()
     val saveGif: MutableLiveData<GifObject> = MutableLiveData()
@@ -37,9 +37,7 @@ class GifListAdapter(private val list: ArrayList<GifObject>, val isGridLayout: B
 
             itemView.run {
                 setOnClickListener { selectedGif.value = item }
-                favIcon.setOnClickListener {
-                    saveGif.value = item
-                }
+                favIcon.setOnClickListener { saveGif.value = item }
             }
         }
     }
