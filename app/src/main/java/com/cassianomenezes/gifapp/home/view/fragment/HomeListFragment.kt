@@ -12,11 +12,9 @@ import com.cassianomenezes.gifapp.extension.bindingContentView
 import com.cassianomenezes.gifapp.extension.dismissKeyboard
 import com.cassianomenezes.gifapp.extension.observe
 import com.cassianomenezes.gifapp.extension.showToast
-import com.cassianomenezes.gifapp.home.database.AppDatabase
 import com.cassianomenezes.gifapp.home.database.GifObject
-import com.cassianomenezes.gifapp.home.database.GifRepository
-import com.cassianomenezes.gifapp.home.database.GifRepositoryImpl
 import com.cassianomenezes.gifapp.home.model.Gif
+import com.cassianomenezes.gifapp.home.view.activity.MainActivity
 import com.cassianomenezes.gifapp.home.view.adapter.GifListAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
 import kotlinx.android.synthetic.main.fragment_home_list.*
@@ -27,8 +25,7 @@ class HomeListFragment : Fragment() {
 
     private val viewModel: HomeListViewModel by viewModel()
 
-    private lateinit var gifRepositoryImpl: GifRepository
-    lateinit var db: AppDatabase
+    private val gifRepositoryImpl by lazy { (activity as MainActivity).gifRepositoryImpl }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,16 +39,6 @@ class HomeListFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        initDB()
-        gifRepositoryImpl = GifRepositoryImpl(db.gifDao())
-    }
-
-    private fun initDB() {
-        db = context?.let { AppDatabase.invoke(it) }!!
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -82,7 +69,6 @@ class HomeListFragment : Fragment() {
         recyclerView.apply {
             adapter = listAdapter
             layoutManager = LinearLayoutManager(context)
-            //layoutManager = GridLayoutManager(this, 2)
             listAdapter.apply {
                 observe(selectedGif) { obj ->
                     obj?.title?.let { title -> context?.showToast(title) }

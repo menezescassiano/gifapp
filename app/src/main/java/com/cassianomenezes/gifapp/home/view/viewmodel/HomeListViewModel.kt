@@ -5,7 +5,6 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cassiano.myapplication.utils.ResourceManager
 import com.cassianomenezes.gifapp.BuildConfig
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
@@ -16,11 +15,7 @@ import kotlinx.coroutines.launch
 import kotlin.collections.set
 
 
-class HomeListViewModel(val repository: DataRepository, resourceManager: ResourceManager) : ViewModel() {
-
-    private val sharedPreferences by lazy { resourceManager.getShardPreferences() }
-
-    val listData = MutableLiveData<ArrayList<GifObject>>()
+class HomeListViewModel(val repository: DataRepository) : ViewModel() {
 
     companion object {
         const val LIMIT = "20"
@@ -28,6 +23,8 @@ class HomeListViewModel(val repository: DataRepository, resourceManager: Resourc
         const val RATING = "g"
         const val LANG = "en"
     }
+
+    val listData = MutableLiveData<ArrayList<GifObject>>()
 
     val responseData: MutableLiveData<Boolean> = MutableLiveData()
     lateinit var list: GifData
@@ -108,14 +105,19 @@ class HomeListViewModel(val repository: DataRepository, resourceManager: Resourc
     fun saveGif(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
         viewModelScope.launch {
             try {
-                gifObject.added = !gifObject.added
-                if(gifObject.added) {
-                    gifRepositoryImpl.insertAll(gifObject)
-                } else {
-                    gifRepositoryImpl.delete(gifObject)
+                gifObject.run {
+                    added = !added
+                    when {
+                        added -> gifRepositoryImpl.insertAll(this)
+                        else -> gifRepositoryImpl.delete(this)
+                    }
                 }
-                listData.value?.find { it.id == gifObject.id }?.added = gifObject.added
-                listData.value = listData.value
+
+                listData.run {
+                    value?.find { it.id == gifObject.id }?.added = gifObject.added
+                    value = listData.value
+                }
+
             } catch (e: Exception){
                 print("awaeaeaeae$e")
             }
@@ -127,10 +129,13 @@ class HomeListViewModel(val repository: DataRepository, resourceManager: Resourc
         viewModelScope.launch {
             try {
                 for (gifObject in gifObjects) {
-                    if (gifRepositoryImpl.getById(gifObject.id) != null) {
-                        newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, true))
-                    } else {
-                        newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, false))
+                    when {
+                        gifRepositoryImpl.getById(gifObject.id) != null ->
+                            newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, true))
+
+                        else ->
+                            newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, false))
+
                     }
                 }
                 listData.value = newGifObjects

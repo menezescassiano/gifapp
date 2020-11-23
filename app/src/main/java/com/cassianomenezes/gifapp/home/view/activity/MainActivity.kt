@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cassianomenezes.gifapp.BR
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.extension.bindingContentView
+import com.cassianomenezes.gifapp.home.database.AppDatabase
+import com.cassianomenezes.gifapp.home.database.GifRepository
+import com.cassianomenezes.gifapp.home.database.GifRepositoryImpl
 import com.cassianomenezes.gifapp.home.view.adapter.PagerAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel
 import com.google.android.material.tabs.TabLayout
@@ -17,11 +20,20 @@ class MainActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
     private val viewModel: MainViewModel by viewModel()
     lateinit var mAdapter: PagerAdapter
 
+    lateinit var gifRepositoryImpl: GifRepository
+    lateinit var db: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBinding()
 
         setupTabLayout()
+        initDB()
+    }
+
+    private fun initDB() {
+        db = AppDatabase.invoke(this)
+        gifRepositoryImpl = GifRepositoryImpl(db.gifDao())
     }
 
     private fun setupBinding() {

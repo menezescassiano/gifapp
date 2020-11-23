@@ -13,4 +13,7 @@ interface ServiceAPI {
 
     @GET("v1/gifs/trending")
     suspend fun getTrending(@QueryMap options: MutableMap<String, String>): Response<GifData>
+
+    @GET("v1/gifs")
+    suspend fun getGifsByIds(@QueryMap options: MutableMap<String, String>): Response<GifData>
 }

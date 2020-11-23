@@ -7,5 +7,6 @@ class DataRepository(private val service: ServiceAPI) : ServiceAPI {
 
     override suspend fun getData(options: MutableMap<String, String>): Response<GifData> = service.getData(options)
     override suspend fun getTrending(options: MutableMap<String, String>): Response<GifData>  = service.getTrending(options)
+    override suspend fun getGifsByIds(options: MutableMap<String, String>): Response<GifData> = service.getGifsByIds(options)
 
 }

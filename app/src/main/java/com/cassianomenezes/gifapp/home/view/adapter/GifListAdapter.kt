@@ -7,19 +7,25 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.cassianomenezes.gifapp.R
+import com.cassianomenezes.gifapp.databinding.LayoutGifGridItemBinding
 import com.cassianomenezes.gifapp.databinding.LayoutGifListItemBinding
 import com.cassianomenezes.gifapp.home.database.GifObject
 import kotlinx.android.synthetic.main.layout_gif_list_item.view.*
 
-class GifListAdapter(private val list: ArrayList<GifObject>) : RecyclerView.Adapter<GifViewHolder>() {
+class GifListAdapter(private val list: ArrayList<GifObject>, val isGridLayout: Boolean = false) : RecyclerView.Adapter<GifViewHolder>() {
 
     val selectedGif: MutableLiveData<GifObject> = MutableLiveData()
     val saveGif: MutableLiveData<GifObject> = MutableLiveData()
-    lateinit var binding: LayoutGifListItemBinding
+    lateinit var binding: ViewDataBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        binding = DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false) as LayoutGifListItemBinding
+        binding = if (isGridLayout) {
+            DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false) as LayoutGifGridItemBinding
+        } else {
+            DataBindingUtil.inflate<ViewDataBinding>(layoutInflater, viewType, parent, false) as LayoutGifListItemBinding
+        }
+
         return GifViewHolder(binding)
     }
 
@@ -43,6 +49,9 @@ class GifListAdapter(private val list: ArrayList<GifObject>) : RecyclerView.Adap
     }
 
     override fun getItemViewType(position: Int): Int {
-        return R.layout.layout_gif_list_item
+        return when {
+            isGridLayout -> R.layout.layout_gif_grid_item
+            else -> R.layout.layout_gif_list_item
+        }
     }
 }
