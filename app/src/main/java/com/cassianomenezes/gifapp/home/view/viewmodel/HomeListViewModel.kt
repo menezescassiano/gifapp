@@ -7,19 +7,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cassiano.myapplication.utils.ResourceManager
 import com.cassianomenezes.gifapp.BuildConfig
-import com.cassianomenezes.gifapp.extension.clearPrefs
-import com.cassianomenezes.gifapp.extension.savePrefs
+import com.cassianomenezes.gifapp.home.database.GifObject
+import com.cassianomenezes.gifapp.home.database.GifRepository
+import com.cassianomenezes.gifapp.home.model.Gif
 import com.cassianomenezes.gifapp.home.model.GifData
 import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
-import kotlin.collections.HashMap
-import kotlin.collections.MutableMap
 import kotlin.collections.set
 
 
 class HomeListViewModel(val repository: DataRepository, resourceManager: ResourceManager) : ViewModel() {
 
     private val sharedPreferences by lazy { resourceManager.getShardPreferences() }
+
+    val listData = MutableLiveData<ArrayList<GifObject>>()
 
     companion object {
         const val LIMIT = "20"
@@ -98,17 +99,43 @@ class HomeListViewModel(val repository: DataRepository, resourceManager: Resourc
     private fun getTrendingParams(): MutableMap<String, String> {
         val data: MutableMap<String, String> = HashMap()
         data["api_key"] = BuildConfig.API_KEY
+        data["limit"] = LIMIT
         data["rating"] = LANG
 
         return data
     }
 
-    fun saveGif(id: String, url: String) {
-        sharedPreferences?.let {
-            if (it.contains(id)) {
-                it.clearPrefs(id)
-            } else {
-                it.savePrefs(id, url)
+    fun saveGif(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
+        viewModelScope.launch {
+            try {
+                gifObject.added = !gifObject.added
+                if(gifObject.added) {
+                    gifRepositoryImpl.insertAll(gifObject)
+                } else {
+                    gifRepositoryImpl.delete(gifObject)
+                }
+                listData.value?.find { it.id == gifObject.id }?.added = gifObject.added
+                listData.value = listData.value
+            } catch (e: Exception){
+                print("awaeaeaeae$e")
+            }
+        }
+    }
+
+    fun handleList(gifObjects: ArrayList<Gif>, gifRepositoryImpl: GifRepository) {
+        val newGifObjects = ArrayList<GifObject>()
+        viewModelScope.launch {
+            try {
+                for (gifObject in gifObjects) {
+                    if (gifRepositoryImpl.getById(gifObject.id) != null) {
+                        newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, true))
+                    } else {
+                        newGifObjects.add(GifObject(gifObject.id, gifObject.title, gifObject.images.originalDetail.url, false))
+                    }
+                }
+                listData.value = newGifObjects
+            } catch (e: Exception){
+                print("awaeaeaeae$e")
             }
         }
     }

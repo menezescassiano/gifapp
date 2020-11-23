@@ -12,6 +12,10 @@ import com.cassianomenezes.gifapp.extension.bindingContentView
 import com.cassianomenezes.gifapp.extension.dismissKeyboard
 import com.cassianomenezes.gifapp.extension.observe
 import com.cassianomenezes.gifapp.extension.showToast
+import com.cassianomenezes.gifapp.home.database.AppDatabase
+import com.cassianomenezes.gifapp.home.database.GifObject
+import com.cassianomenezes.gifapp.home.database.GifRepository
+import com.cassianomenezes.gifapp.home.database.GifRepositoryImpl
 import com.cassianomenezes.gifapp.home.model.Gif
 import com.cassianomenezes.gifapp.home.view.adapter.GifListAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
@@ -23,13 +27,31 @@ class HomeListFragment : Fragment() {
 
     private val viewModel: HomeListViewModel by viewModel()
 
+    private lateinit var gifRepositoryImpl: GifRepository
+    lateinit var db: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.apply {
             observe(responseData) {
-                setRecyclerView()
+                handleList()
+            }
+            observe(listData) {
+                it?.let {
+                    setRecyclerView(it)
+                }
             }
         }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        initDB()
+        gifRepositoryImpl = GifRepositoryImpl(db.gifDao())
+    }
+
+    private fun initDB() {
+        db = context?.let { AppDatabase.invoke(it) }!!
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,21 +69,28 @@ class HomeListFragment : Fragment() {
 
     }
 
-    private fun setRecyclerView() {
-        val listAdapter = GifListAdapter(viewModel.list.data as ArrayList<Gif>)
+    private fun handleList() {
+        getList()
+    }
+
+    private fun getList() {
+        viewModel.handleList(viewModel.list.data as ArrayList<Gif>, gifRepositoryImpl)
+    }
+
+    private fun setRecyclerView(arrayList: ArrayList<GifObject>) {
+        val listAdapter = GifListAdapter(arrayList)
         recyclerView.apply {
             adapter = listAdapter
             layoutManager = LinearLayoutManager(context)
             //layoutManager = GridLayoutManager(this, 2)
-        }
-
-        listAdapter.apply {
-            observe(selectedGif) {
-                it?.title?.let { title -> context?.showToast(title) }
-            }
-            observe(saveGif) {
-                it?.let {
-                    viewModel.saveGif(it.id, it.images.originalDetail.url)
+            listAdapter.apply {
+                observe(selectedGif) { obj ->
+                    obj?.title?.let { title -> context?.showToast(title) }
+                }
+                observe(saveGif) { obj ->
+                    obj?.let {
+                        viewModel.saveGif(GifObject(obj.id, obj.title, obj.url, obj.added), gifRepositoryImpl)
+                    }
                 }
             }
         }

@@ -113,4 +113,9 @@ dependencies {
 
     //lint
     ktlint "com.pinterest:ktlint:$versions.ktlint"
+
+    //room
+    implementation "androidx.room:room-runtime:$versions.room"
+    kapt "androidx.room:room-compiler:$versions.room"
+    implementation "androidx.room:room-ktx:$versions.room"
 }

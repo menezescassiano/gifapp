@@ -8,13 +8,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.databinding.LayoutGifListItemBinding
-import com.cassianomenezes.gifapp.home.model.Gif
+import com.cassianomenezes.gifapp.home.database.GifObject
 import kotlinx.android.synthetic.main.layout_gif_list_item.view.*
 
-class GifListAdapter(private val list: ArrayList<Gif>) : RecyclerView.Adapter<GifViewHolder>() {
+class GifListAdapter(private val list: ArrayList<GifObject>) : RecyclerView.Adapter<GifViewHolder>() {
 
-    val selectedGif: MutableLiveData<Gif> = MutableLiveData()
-    val saveGif: MutableLiveData<Gif> = MutableLiveData()
+    val selectedGif: MutableLiveData<GifObject> = MutableLiveData()
+    val saveGif: MutableLiveData<GifObject> = MutableLiveData()
     lateinit var binding: LayoutGifListItemBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GifViewHolder {
@@ -33,7 +33,6 @@ class GifListAdapter(private val list: ArrayList<Gif>) : RecyclerView.Adapter<Gi
                 setOnClickListener { selectedGif.value = item }
                 favIcon.setOnClickListener {
                     saveGif.value = item
-                    setIcon(item)
                 }
             }
         }

@@ -7,6 +7,7 @@ import com.cassiano.myapplication.utils.DrawableUtils
 import com.cassianomenezes.gifapp.BR
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.extension.getSharedPreferences
+import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.model.Gif
 
 class GifViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -17,23 +18,23 @@ class GifViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHol
         context.getSharedPreferences(context.getString(R.string.app_shared_preferences))
     }
 
-    fun bind(item: Gif) {
+    fun bind(item: GifObject) {
 
         this.binding.apply {
             item.run {
                 setVariable(BR.title, title)
-                setVariable(BR.imageURL, images.originalDetail.url)
-                setIcon(item)
+                setVariable(BR.imageURL, url)
+                setIcon(item, item.added)
             }
             executePendingBindings()
         }
     }
 
-    fun setIcon(item: Gif) {
+    private fun setIcon(item: GifObject, contains: Boolean = false) {
         this.binding.apply {
             item.run {
                 when {
-                    sharedPreferences.contains(id) -> setVariable(BR.favIcon, DrawableUtils.getDrawable(context, R.drawable.ic_fav))
+                    contains -> setVariable(BR.favIcon, DrawableUtils.getDrawable(context, R.drawable.ic_fav))
                     else -> setVariable(BR.favIcon, DrawableUtils.getDrawable(context, R.drawable.ic_unfav))
                 }
             }
