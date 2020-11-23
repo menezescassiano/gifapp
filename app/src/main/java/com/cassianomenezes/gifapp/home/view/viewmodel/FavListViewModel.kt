@@ -35,25 +35,29 @@ class FavListViewModel(val repository: DataRepository) : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun getElementsGifs(list: List<GifObject>) {
-        running.set(true)
-        showTryAgain.set(false)
         gifList.clear()
-        viewModelScope.launch {
-            try {
-                repository.getGifsByIds(getGifsIdsParams(list)).run {
+        if (list.isNotEmpty()) {
+            running.set(true)
+            showTryAgain.set(false)
+            viewModelScope.launch {
+                try {
+                    repository.getGifsByIds(getGifsIdsParams(list)).run {
+                        running.set(false)
+                        takeIf { this.isSuccessful }?.run {
+                            mylist = this.body() as GifData
+                            for (item in mylist.data) {
+                                gifList.add(GifObject(item.id, item.title, item.images.originalDetail.url, true))
+                            }
+                            responseData.value = gifList
+                        } ?: showTryAgain.set(true)
+                    }
+                } catch (e: Exception) {
                     running.set(false)
-                    takeIf { this.isSuccessful }?.run {
-                        mylist = this.body() as GifData
-                        for (item in mylist.data) {
-                            gifList.add(GifObject(item.id, item.title, item.images.originalDetail.url, true))
-                        }
-                        responseData.value = gifList
-                    } ?: showTryAgain.set(true)
+                    showTryAgain.set(true)
                 }
-            } catch (e: Exception) {
-                running.set(false)
-                showTryAgain.set(true)
             }
+        } else {
+            responseData.value = gifList
         }
     }
 

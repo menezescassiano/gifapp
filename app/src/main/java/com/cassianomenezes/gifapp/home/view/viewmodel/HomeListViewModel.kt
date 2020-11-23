@@ -44,41 +44,40 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
     }
 
     private fun getTrendingData() {
-        running.set(true)
-        showTryAgain.set(false)
+        handleUILoading(true, false)
         viewModelScope.launch {
             try {
                 repository.getTrending(getTrendingParams()).run {
-                    running.set(false)
                     takeIf { this.isSuccessful }?.run {
                         responseData.postValue(true)
                         list = this.body() as GifData
-                    } ?: showTryAgain.set(true)
+                    } ?: handleUILoading(false, true)
                 }
             } catch (e: Exception) {
-                running.set(false)
-                showTryAgain.set(true)
+                handleUILoading(false, true)
             }
         }
     }
 
     private fun getData() {
-        running.set(true)
-        showTryAgain.set(false)
+        handleUILoading(true, false)
         viewModelScope.launch {
             try {
                 repository.getData(getParams()).run {
-                    running.set(false)
                     takeIf { this.isSuccessful }?.run {
                         responseData.postValue(true)
                         list = this.body() as GifData
-                    } ?: showTryAgain.set(true)
+                    } ?: handleUILoading(false, true)
                 }
             } catch (e: Exception) {
-                running.set(false)
-                showTryAgain.set(true)
+                handleUILoading(false, true)
             }
         }
+    }
+
+    private fun handleUILoading(_running: Boolean, _showTryAgain: Boolean) {
+        running.set(_running)
+        showTryAgain.set(_showTryAgain)
     }
 
     private fun getParams(): MutableMap<String, String> {
@@ -119,7 +118,7 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
                 }
 
             } catch (e: Exception){
-                print("awaeaeaeae$e")
+                println("Error: $e")
             }
         }
     }
@@ -139,8 +138,10 @@ class HomeListViewModel(val repository: DataRepository) : ViewModel() {
                     }
                 }
                 listData.value = newGifObjects
+                running.set(false)
             } catch (e: Exception){
                 print("awaeaeaeae$e")
+                running.set(false)
             }
         }
     }

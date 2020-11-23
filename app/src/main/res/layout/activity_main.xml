@@ -9,10 +9,6 @@
         <import type="android.view.View" />
 
         <variable
-            name="viewModel"
-            type="com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel" />
-
-        <variable
             name="onTryAgainClick"
             type="android.view.View.OnClickListener" />
 

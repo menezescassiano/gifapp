@@ -3,7 +3,6 @@ package com.cassianomenezes.gifapp.di
 import com.cassiano.myapplication.utils.ResourceManager
 import com.cassianomenezes.gifapp.home.view.viewmodel.FavListViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
-import com.cassianomenezes.gifapp.home.view.viewmodel.MainViewModel
 import com.cassianomenezes.gifapp.network.RetrofitClient
 import com.cassianomenezes.gifapp.repository.DataRepository
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -22,7 +21,6 @@ private val resourceManager = module {
 }
 
 private val viewModelModule = module {
-    viewModel { MainViewModel(repository = get()) }
     viewModel { HomeListViewModel(repository = get()) }
     viewModel { FavListViewModel(repository = get()) }
 }

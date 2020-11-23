@@ -27,11 +27,14 @@ class HomeListFragment : Fragment() {
 
     private val gifRepositoryImpl by lazy { (activity as MainActivity).gifRepositoryImpl }
 
+    private var initialized = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.apply {
             observe(responseData) {
                 handleList()
+                initialized = true
             }
             observe(listData) {
                 it?.let {
@@ -57,10 +60,6 @@ class HomeListFragment : Fragment() {
     }
 
     private fun handleList() {
-        getList()
-    }
-
-    private fun getList() {
         viewModel.handleList(viewModel.list.data as ArrayList<Gif>, gifRepositoryImpl)
     }
 
@@ -79,6 +78,13 @@ class HomeListFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    override fun setMenuVisibility(menuVisible: Boolean) {
+        super.setMenuVisibility(menuVisible)
+        if (menuVisible && initialized) {
+            handleList()
         }
     }
 }
