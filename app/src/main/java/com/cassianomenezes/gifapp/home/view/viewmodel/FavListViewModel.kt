@@ -10,13 +10,13 @@ import com.cassianomenezes.gifapp.home.model.GifData
 import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
 
-class FavListViewModel(val repository: DataRepository) : BaseViewModel() {
+class FavListViewModel(val repository: DataRepository, private val gifRepositoryImpl: GifRepository) : BaseViewModel() {
 
     var gifList = ArrayList<GifObject>()
     val onDeleteGif = MutableLiveData<Boolean>()
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun getAllElements(gifRepositoryImpl: GifRepository) {
+    fun getAllElements() {
         viewModelScope.launch {
             try {
                 getElementsGifs(gifRepositoryImpl.getAll())
@@ -34,7 +34,7 @@ class FavListViewModel(val repository: DataRepository) : BaseViewModel() {
             viewModelScope.launch {
                 try {
                     repository.run {
-                        getGifsByIds(getGifsIdsParams(list)).run {
+                        getGifsByIds(list).run {
                             running.set(false)
                             takeIf { this.isSuccessful }?.run {
                                 for (item in (this.body() as GifData).data) {
@@ -54,7 +54,7 @@ class FavListViewModel(val repository: DataRepository) : BaseViewModel() {
         }
     }
 
-    fun deleteGif(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
+    fun deleteGif(gifObject: GifObject) {
         viewModelScope.launch {
             try {
                 gifRepositoryImpl.delete(gifObject)

@@ -9,7 +9,7 @@ import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
 
 
-class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), LifecycleObserver {
+class HomeListViewModel(val repository: DataRepository, private val gifRepositoryImpl: GifRepository) : BaseViewModel(), LifecycleObserver {
 
     val responseData: MutableLiveData<Boolean> = MutableLiveData()
     lateinit var list: GifData
@@ -28,7 +28,7 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
         viewModelScope.launch {
             try {
                 repository.run {
-                    getTrending(getTrendingParams()).run {
+                    getTrending().run {
                         takeIf { this.isSuccessful }?.run {
                             responseData.postValue(true)
                             list = this.body() as GifData
@@ -47,7 +47,7 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
         viewModelScope.launch {
             try {
                 repository.run {
-                    getData(getParams(inputTextSearch.value.toString())).run {
+                    getData(inputTextSearch.value.toString()).run {
                         takeIf { this.isSuccessful }?.run {
                             responseData.postValue(true)
                             list = this.body() as GifData
@@ -62,7 +62,7 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
     }
 
 
-    fun gifCrud(gifObject: GifObject, gifRepositoryImpl: GifRepository) {
+    fun gifCrud(gifObject: GifObject) {
         viewModelScope.launch {
             try {
                 gifObject.run {
@@ -84,7 +84,7 @@ class HomeListViewModel(val repository: DataRepository) : BaseViewModel(), Lifec
         }
     }
 
-    fun handleList(gifObjects: ArrayList<Gif>, gifRepositoryImpl: GifRepository) {
+    fun handleList(gifObjects: ArrayList<Gif>) {
         val newGifObjects = ArrayList<GifObject>()
         viewModelScope.launch {
             try {

@@ -19,11 +19,12 @@ import com.cassianomenezes.gifapp.home.view.adapter.GifListAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.FavListViewModel
 import kotlinx.android.synthetic.main.fragment_home_list.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-class FavListFragment(): Fragment() {
+class FavListFragment: Fragment() {
 
-    private val viewModel: FavListViewModel by viewModel()
-    private val gifRepositoryImpl by lazy { (activity as MainActivity).gifRepositoryImpl }
+    private val viewModel: FavListViewModel by viewModel{ parametersOf((activity as MainActivity).gifRepositoryImpl)}
+
     private lateinit var listAdapter: GifListAdapter
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -31,7 +32,7 @@ class FavListFragment(): Fragment() {
         return bindingContentView(inflater, R.layout.fragment_favorite_list, container).apply {
             setVariable(BR.viewModel, viewModel)
             setVariable(BR.onTryAgainClick, View.OnClickListener {
-                viewModel.getAllElements(gifRepositoryImpl)
+                viewModel.getAllElements()
             })
         }.root
     }
@@ -54,7 +55,7 @@ class FavListFragment(): Fragment() {
     override fun setMenuVisibility(menuVisible: Boolean) {
         super.setMenuVisibility(menuVisible)
         if (menuVisible) {
-            viewModel.getAllElements(gifRepositoryImpl)
+            viewModel.getAllElements()
         }
     }
 
@@ -70,11 +71,10 @@ class FavListFragment(): Fragment() {
                 }
                 observe(saveGif) { obj ->
                     obj?.let {
-                        viewModel.deleteGif(obj, gifRepositoryImpl)
+                        viewModel.deleteGif(obj)
                     }
                 }
             }
         }
     }
-
 }

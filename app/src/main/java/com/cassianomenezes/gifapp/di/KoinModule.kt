@@ -1,5 +1,6 @@
 package com.cassianomenezes.gifapp.di
 
+import com.cassianomenezes.gifapp.home.database.GifRepository
 import com.cassianomenezes.gifapp.home.view.viewmodel.BaseViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.FavListViewModel
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
@@ -18,8 +19,8 @@ private val repositoryModule = module {
 
 private val viewModelModule = module {
     viewModel { BaseViewModel() }
-    viewModel { HomeListViewModel(repository = get()) }
-    viewModel { FavListViewModel(repository = get()) }
+    viewModel { (gifRepository: GifRepository) -> HomeListViewModel(repository = get(), gifRepositoryImpl = gifRepository) }
+    viewModel { (gifRepository: GifRepository) -> FavListViewModel(repository = get(), gifRepositoryImpl = gifRepository) }
 }
 
 fun loadKoinModules() {

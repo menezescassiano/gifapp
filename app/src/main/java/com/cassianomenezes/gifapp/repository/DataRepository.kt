@@ -14,12 +14,17 @@ class DataRepository(private val service: ServiceAPI) : ServiceAPI {
         const val LANG = "en"
     }
 
+    suspend fun getData(string: String): Response<GifData> { return service.getData(getParams(string)) }
+
+    suspend fun getTrending(): Response<GifData> { return service.getTrending(getTrendingParams()) }
+    suspend fun getGifsByIds(list: List<GifObject>): Response<GifData> { return service.getGifsByIds(getGifsIdsParams(list)) }
+
     override suspend fun getData(options: MutableMap<String, String>): Response<GifData> = service.getData(options)
     override suspend fun getTrending(options: MutableMap<String, String>): Response<GifData>  = service.getTrending(options)
     override suspend fun getGifsByIds(options: MutableMap<String, String>): Response<GifData> = service.getGifsByIds(options)
 
 
-    fun getGifsIdsParams(list: List<GifObject>): MutableMap<String, String> {
+    private fun getGifsIdsParams(list: List<GifObject>): MutableMap<String, String> {
         val data: MutableMap<String, String> = HashMap()
         val idsList = list.map { it.id }
         data["ids"] = idsList.toString().removePrefix("[").removeSuffix("]").replace(" ", "")
@@ -28,7 +33,7 @@ class DataRepository(private val service: ServiceAPI) : ServiceAPI {
         return data
     }
 
-    fun getParams(input: String): MutableMap<String, String> {
+    private fun getParams(input: String): MutableMap<String, String> {
         val data: MutableMap<String, String> = HashMap()
         data["api_key"] = BuildConfig.API_KEY
         data["q"] = input
@@ -40,7 +45,7 @@ class DataRepository(private val service: ServiceAPI) : ServiceAPI {
         return data
     }
 
-    fun getTrendingParams(): MutableMap<String, String> {
+    private fun getTrendingParams(): MutableMap<String, String> {
         val data: MutableMap<String, String> = HashMap()
         data["api_key"] = BuildConfig.API_KEY
         data["limit"] = LIMIT

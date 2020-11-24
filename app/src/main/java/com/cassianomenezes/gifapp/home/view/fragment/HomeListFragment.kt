@@ -19,13 +19,12 @@ import com.cassianomenezes.gifapp.home.view.adapter.GifListAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
 import kotlinx.android.synthetic.main.fragment_home_list.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class HomeListFragment : Fragment() {
 
-    private val viewModel: HomeListViewModel by viewModel()
-
-    private val gifRepositoryImpl by lazy { (activity as MainActivity).gifRepositoryImpl }
+    private val viewModel: HomeListViewModel by viewModel{ parametersOf((activity as MainActivity).gifRepositoryImpl)}
 
     private var initialized = false
 
@@ -58,7 +57,7 @@ class HomeListFragment : Fragment() {
     }
 
     private fun handleList() {
-        viewModel.handleList(viewModel.list.data as ArrayList<Gif>, gifRepositoryImpl)
+        viewModel.handleList(viewModel.list.data as ArrayList<Gif>)
     }
 
     private fun setRecyclerView(arrayList: ArrayList<GifObject>) {
@@ -72,7 +71,7 @@ class HomeListFragment : Fragment() {
                 }
                 observe(saveGif) { obj ->
                     obj?.let {
-                        viewModel.gifCrud(GifObject(obj.id, obj.title, obj.url, obj.added), gifRepositoryImpl)
+                        viewModel.gifCrud(GifObject(obj.id, obj.title, obj.url, obj.added))
                     }
                 }
             }
