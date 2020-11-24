@@ -6,7 +6,7 @@
 
 ## Lint
 
-Ktlint
+* Ktlint
 
 ## Dependency Injection
 
@@ -22,8 +22,12 @@ Ktlint
 
 * Glide
 
-## Image Sources
+## Image Source
 * Google Material Design
 
 ## Database
 * Room
+
+## API Service Requests
+
+* Giphy
