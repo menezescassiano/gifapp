@@ -3,6 +3,7 @@ package com.cassianomenezes.gifapp.home.view.viewmodel
 import androidx.lifecycle.*
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
+import com.cassianomenezes.gifapp.home.model.DataResult
 import com.cassianomenezes.gifapp.home.model.Gif
 import com.cassianomenezes.gifapp.home.model.GifData
 import com.cassianomenezes.gifapp.internal.RequestStatus
@@ -28,11 +29,7 @@ class HomeListViewModel(val repository: DataRepository, private val gifRepositor
         handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
             repository.getTrending().run {
-                responseData.postValue(true)
-                this.data?.let {
-                    list = it
-                }
-                changeState(this.status)
+                handleServerResponse(this)
             }
         }
     }
@@ -41,14 +38,17 @@ class HomeListViewModel(val repository: DataRepository, private val gifRepositor
         handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
             repository.getData(inputTextSearch.value.toString()).run {
-                responseData.postValue(true)
-                this.data?.let {
-                    list = it
-                }
-                changeState(this.status)
-
+                handleServerResponse(this)
             }
         }
+    }
+
+    private fun handleServerResponse(dataResult: DataResult<GifData>) {
+        responseData.postValue(true)
+        dataResult.data?.let {
+            list = it
+        }
+        changeState(dataResult.status)
     }
 
     fun gifCrud(gifObject: GifObject) {
