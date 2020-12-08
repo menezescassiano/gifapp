@@ -57,7 +57,9 @@ class HomeListFragment : Fragment() {
     }
 
     private fun handleList() {
-        viewModel.handleList(viewModel.list.data as ArrayList<Gif>)
+        viewModel.list?.let {
+            viewModel.handleList(it.data as ArrayList<Gif>)
+        }
     }
 
     private fun setRecyclerView(arrayList: ArrayList<GifObject>) {

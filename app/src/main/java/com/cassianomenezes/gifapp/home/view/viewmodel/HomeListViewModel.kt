@@ -5,6 +5,7 @@ import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
 import com.cassianomenezes.gifapp.home.model.Gif
 import com.cassianomenezes.gifapp.home.model.GifData
+import com.cassianomenezes.gifapp.internal.RequestStatus
 import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
 
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 class HomeListViewModel(val repository: DataRepository, private val gifRepositoryImpl: GifRepository) : BaseViewModel(), LifecycleObserver {
 
     val responseData: MutableLiveData<Boolean> = MutableLiveData()
-    lateinit var list: GifData
+    var list: GifData? = null
     var inputTextSearch = MutableLiveData("")
 
     fun handleData() {
@@ -26,18 +27,12 @@ class HomeListViewModel(val repository: DataRepository, private val gifRepositor
     private fun getTrendingData() {
         handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
-            try {
-                repository.run {
-                    getTrending().run {
-                        takeIf { this.isSuccessful }?.run {
-                            responseData.postValue(true)
-                            list = this.body() as GifData
-                        } ?: handleUILoading(_running = false, _showTryAgain = true)
-                    }
+            repository.getTrending().run {
+                responseData.postValue(true)
+                this.data?.let {
+                    list = it
                 }
-
-            } catch (e: Exception) {
-                handleUILoading(_running = false, _showTryAgain = true)
+                changeState(this.status)
             }
         }
     }
@@ -45,22 +40,16 @@ class HomeListViewModel(val repository: DataRepository, private val gifRepositor
     private fun getData() {
         handleUILoading(_running = true, _showTryAgain = false)
         viewModelScope.launch {
-            try {
-                repository.run {
-                    getData(inputTextSearch.value.toString()).run {
-                        takeIf { this.isSuccessful }?.run {
-                            responseData.postValue(true)
-                            list = this.body() as GifData
-                        } ?: handleUILoading(_running = false, _showTryAgain = true)
-                    }
+            repository.getData(inputTextSearch.value.toString()).run {
+                responseData.postValue(true)
+                this.data?.let {
+                    list = it
                 }
+                changeState(this.status)
 
-            } catch (e: Exception) {
-                handleUILoading(_running = false, _showTryAgain = true)
             }
         }
     }
-
 
     fun gifCrud(gifObject: GifObject) {
         viewModelScope.launch {
@@ -104,6 +93,13 @@ class HomeListViewModel(val repository: DataRepository, private val gifRepositor
                 print("Error: $e")
                 running.set(false)
             }
+        }
+    }
+
+    private fun changeState(state: RequestStatus) {
+        when (state) {
+            RequestStatus.ERROR -> handleUILoading(_running = false, _showTryAgain = true)
+            else -> handleUILoading(_running = false, _showTryAgain = false)
         }
     }
 }

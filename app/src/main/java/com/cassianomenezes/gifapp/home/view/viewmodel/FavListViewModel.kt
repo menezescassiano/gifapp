@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.database.GifRepository
-import com.cassianomenezes.gifapp.home.model.GifData
+import com.cassianomenezes.gifapp.internal.RequestStatus
 import com.cassianomenezes.gifapp.repository.DataRepository
 import kotlinx.coroutines.launch
 
@@ -32,21 +32,14 @@ class FavListViewModel(val repository: DataRepository, private val gifRepository
         if (list.isNotEmpty()) {
             handleUILoading(_running = true, _showTryAgain = false)
             viewModelScope.launch {
-                try {
-                    repository.run {
-                        getGifsByIds(list).run {
-                            running.set(false)
-                            takeIf { this.isSuccessful }?.run {
-                                for (item in (this.body() as GifData).data) {
-                                    gifList.add(GifObject(item.id, item.title, item.images.originalDetail.url, true))
-                                }
-                                listData.value = gifList
-                            } ?: showTryAgain.set(true)
+                repository.getGifsByIds(list).run {
+                    this.data?.let {
+                        for (item in it.data) {
+                            gifList.add(GifObject(item.id, item.title, item.images.originalDetail.url, true))
                         }
+                        listData.value = gifList
                     }
-
-                } catch (e: Exception) {
-                    handleUILoading(_running = false, _showTryAgain = true)
+                    changeState(this.status)
                 }
             }
         } else {
@@ -63,6 +56,13 @@ class FavListViewModel(val repository: DataRepository, private val gifRepository
             } catch (e: Exception){
                 print("Error: $e")
             }
+        }
+    }
+
+    private fun changeState(state: RequestStatus) {
+        when (state) {
+            RequestStatus.ERROR -> handleUILoading(_running = false, _showTryAgain = true)
+            else -> handleUILoading(_running = false, _showTryAgain = false)
         }
     }
 }
