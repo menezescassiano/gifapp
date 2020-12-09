@@ -53,44 +53,19 @@ class HomeListViewModel(val repository: DataRepository, private val gifRepositor
 
     fun gifCrud(gifObject: GifObject) {
         viewModelScope.launch {
-            try {
-                gifObject.run {
-                    added = !added
-                    when {
-                        added -> gifRepositoryImpl.insertAll(this)
-                        else -> gifRepositoryImpl.delete(this)
-                    }
-                }
-
+            gifRepositoryImpl.gifCrud(gifObject).run {
                 listData.run {
                     value?.find { it.id == gifObject.id }?.added = gifObject.added
                     value = listData.value
                 }
-
-            } catch (e: Exception){
-                println("Error: $e")
             }
         }
     }
 
     fun handleList(gifObjects: ArrayList<Gif>) {
-        val newGifObjects = ArrayList<GifObject>()
         viewModelScope.launch {
-            try {
-                gifObjects.forEach {
-                    when {
-                        gifRepositoryImpl.getById(it.id) != null ->
-                            newGifObjects.add(GifObject(it.id, it.title, it.images.originalDetail.url, true))
-
-                        else ->
-                            newGifObjects.add(GifObject(it.id, it.title, it.images.originalDetail.url, false))
-
-                    }
-                }
-                listData.value = newGifObjects
-                running.set(false)
-            } catch (e: Exception){
-                print("Error: $e")
+            gifRepositoryImpl.getMyData(gifObjects).run {
+                listData.value = this.data
                 running.set(false)
             }
         }

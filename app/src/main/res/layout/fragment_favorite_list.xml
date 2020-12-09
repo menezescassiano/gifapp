@@ -32,6 +32,7 @@
             android:layout_height="match_parent"
             android:layout_margin="20dp"
             android:paddingBottom="?attr/actionBarSize"
+            android:visibility="@{viewModel.showTryAgain || viewModel.running ? View.GONE : View.VISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

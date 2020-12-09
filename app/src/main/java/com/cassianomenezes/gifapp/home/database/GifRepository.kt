@@ -1,5 +1,8 @@
 package com.cassianomenezes.gifapp.home.database
 
+import com.cassianomenezes.gifapp.home.model.DataResult
+import com.cassianomenezes.gifapp.home.model.Gif
+
 interface GifRepository {
 
     suspend fun insertAll(gif: GifObject)
@@ -12,4 +15,7 @@ interface GifRepository {
 
     suspend fun getById(id: String): GifObject
 
+    suspend fun getMyData(gifObjects: ArrayList<Gif>): DataResult<ArrayList<GifObject>>
+
+    suspend fun gifCrud(gifObject: GifObject)
 }
