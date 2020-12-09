@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cassianomenezes.gifapp.BR
+import com.cassianomenezes.gifapp.BaseApplication
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.extension.bindingContentView
 import com.cassianomenezes.gifapp.extension.dismissKeyboard
@@ -14,7 +15,6 @@ import com.cassianomenezes.gifapp.extension.observe
 import com.cassianomenezes.gifapp.extension.showToast
 import com.cassianomenezes.gifapp.home.database.GifObject
 import com.cassianomenezes.gifapp.home.model.Gif
-import com.cassianomenezes.gifapp.home.view.activity.MainActivity
 import com.cassianomenezes.gifapp.home.view.adapter.GifListAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.HomeListViewModel
 import kotlinx.android.synthetic.main.fragment_home_list.*
@@ -24,7 +24,7 @@ import org.koin.core.parameter.parametersOf
 
 class HomeListFragment : Fragment() {
 
-    private val viewModel: HomeListViewModel by viewModel{ parametersOf((activity as MainActivity).gifRepositoryImpl)}
+    private val viewModel: HomeListViewModel by viewModel{ parametersOf((activity?.application as BaseApplication).gifRepositoryImpl)}
 
     private var initialized = false
 

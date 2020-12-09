@@ -9,12 +9,12 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.cassianomenezes.gifapp.BR
+import com.cassianomenezes.gifapp.BaseApplication
 import com.cassianomenezes.gifapp.R
 import com.cassianomenezes.gifapp.extension.bindingContentView
 import com.cassianomenezes.gifapp.extension.observe
 import com.cassianomenezes.gifapp.extension.showToast
 import com.cassianomenezes.gifapp.home.database.GifObject
-import com.cassianomenezes.gifapp.home.view.activity.MainActivity
 import com.cassianomenezes.gifapp.home.view.adapter.GifListAdapter
 import com.cassianomenezes.gifapp.home.view.viewmodel.FavListViewModel
 import kotlinx.android.synthetic.main.fragment_home_list.*
@@ -23,7 +23,7 @@ import org.koin.core.parameter.parametersOf
 
 class FavListFragment: Fragment() {
 
-    private val viewModel: FavListViewModel by viewModel{ parametersOf((activity as MainActivity).gifRepositoryImpl)}
+    private val viewModel: FavListViewModel by viewModel{ parametersOf((activity?.application as BaseApplication).gifRepositoryImpl)}
 
     private lateinit var listAdapter: GifListAdapter
 
